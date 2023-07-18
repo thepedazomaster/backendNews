@@ -33,7 +33,7 @@ const verifyToken = (req, res, next) => {
     var _a;
     const token = req.body.token || req.query.token || req.headers["x-access-token"];
     if (!token) {
-        return res.status(403).send("A token is required for authentication");
+        return res.status(401).send("A token is required for authentication");
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(token, (_a = process.env.SECRET_KEY) !== null && _a !== void 0 ? _a : "");
