@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+model user{
+  id Int @unique @default(autoincrement())
+  email String @unique
+  password String
+  person person?
+  search_news search_news[]
+  user_news user_news[]
+  create_at DateTime @default(now())
+  update_at DateTime @updatedAt
+}
+model person{
+  id Int @unique @default(autoincrement())
+  name String
+  lastname String
+  user_id Int @unique
+  user user @relation(fields: [user_id], references: [id])
+  update_at DateTime @updatedAt
+}
+
+model user_news{
+  id Int @unique @default(autoincrement())
+  user_id Int
+  news_id Int
+  user  user @relation(fields: [user_id], references: [id])
+  news  news @relation(fields: [news_id], references: [id])
+
+}
+
+model search_news{
+  id Int @unique @default(autoincrement())
+  q String?
+  from DateTime? @db.Date
+  to DateTime? @db.Date
+  country_code String?
+  lenguage_code String?
+  categories_news_id Int?
+  user_id Int
+  type_search_id Int
+  create_at DateTime @default(now())
+  country  country? @relation(fields: [country_code], references: [code])
+  lenguage  lenguage? @relation(fields: [lenguage_code], references: [code])
+  categories_news  categories_news? @relation(fields: [categories_news_id], references: [id])
+  user  user @relation(fields: [user_id], references: [id])
+  type_search type_search @relation(fields: [type_search_id], references: [id])
+
+}
+model type_search{
+   id Int @unique @default(autoincrement())
+  name String @unique
+  search_news search_news[]
+}
+model news{
+  id Int @unique @default(autoincrement())
+  title String
+  author String?
+  description String? @db.Text
+  url String @db.Text
+  url_image String? @db.Text
+  publishedAt DateTime @db.Timestamp()
+  relevance_id Int
+  font_Type_id Int
+  tone_id Int 
+  format_id Int
+  feeling_id Int
+  lenguage String
+  relevance relevance @relation(fields: [relevance_id], references: [id])
+  font_type font_type @relation(fields: [font_Type_id], references: [id])
+  format_news  format_news @relation(fields: [format_id], references: [id])
+  tone_news tone_news @relation(fields: [tone_id], references: [id])
+  create_at DateTime @default(now())
+  user_news user_news[]
+  @@id([title,publishedAt])
+}
+
+model relevance{
+  id Int @unique @default(autoincrement())
+  name String
+  news news[]
+}
+model font_type{
+  id Int @unique @default(autoincrement())
+  name String
+  news news[]
+
+}
+model format_news{
+  id Int @unique @default(autoincrement())
+  name String
+  news news[]
+
+}
+model tone_news{
+  id Int @unique @default(autoincrement())
+  name String
+  news news[]
+}
+
+
+
+model country{
+  code String @db.VarChar(2) @unique
+  name String
+  search_news search_news[]
+}
+model lenguage{
+  code String @unique @db.VarChar(2)
+  name String
+  search_news search_news[]
+
+}
+model categories_news{
+  id Int @unique @default(autoincrement())
+  name String @unique
+  search_news search_news[]
+}
